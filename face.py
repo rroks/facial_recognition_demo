@@ -6,6 +6,7 @@ from keras_vggface.vggface import VGGFace
 from keras_vggface.utils import preprocess_input
 from keras_vggface.utils import decode_predictions
 from scipy.spatial.distance import cosine
+from keras import backend
 
 
 class MatchingResult:
@@ -44,16 +45,16 @@ def extract_face(filename, required_size=(224, 224)):
 
 
 # extract faces and calculate face embeddings for a list of photo files
-def get_embeddings(filenames):
-    # extract faces
-    faces = [extract_face(f) for f in filenames]
+def get_embeddings(faces):
     # convert into an array of samples
     samples = asarray(faces, 'float32')
     # prepare the face for the model, e.g. center pixels
     samples = preprocess_input(samples, version=2)
+    backend.clear_session()
     # create a vggface model
     model = VGGFace(model='vgg16', include_top=False, input_shape=(224, 224, 3), pooling='avg')
     # perform prediction
+    model._make_predict_function()
     yhat = model.predict(samples)
     return yhat
 

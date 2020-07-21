@@ -5,7 +5,9 @@ __email__ = 'felonerroks@gmail.com'
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
+from keras import backend
 
+from face import extract_face
 from face import get_embeddings
 from face import is_match
 from face import MatchingResult
@@ -23,6 +25,7 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 # sanity check route
 @app.route('/face/verification', methods=['POST'])
 def verify():
+    backend.clear_session()
     threshold = 0.2
     uploaded_files = request.files
     filenames = list(uploaded_files)
@@ -34,7 +37,12 @@ def verify():
 
     if len(uploaded_files) < 2:
         return jsonify("don't upload less than 2 pictures")
-    embeddings = get_embeddings(file_items)
+    # extract faces
+    print(len(file_items))
+    faces = [extract_face(f) for f in file_items]
+    print(len(faces))
+    embeddings = get_embeddings(faces)
+    print(len(embeddings))
     results = []
     for x in range(1, len(embeddings)):
         result_cosine = is_match(embeddings[0], embeddings[x])
