@@ -19,7 +19,6 @@ class MatchingResult:
 # extract a single face from a given photograph
 # size is specified to suit keras-vggface util
 def extract_face(filename, required_size=(224, 224)):
-    print("++++++" + str(type(filename)))
     # load image from file
     image = Image.open(filename.stream)
     # convert to RGB, if needed
@@ -30,6 +29,8 @@ def extract_face(filename, required_size=(224, 224)):
     detector = MTCNN()
     # detect faces in the image
     results = detector.detect_faces(pixels)
+    if len(results) == 0:
+        return
     # extract the bounding box from the first face
     x1, y1, width, height = results[0]['box']
     # bug fix

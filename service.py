@@ -30,19 +30,15 @@ def verify():
     uploaded_files = request.files
     filenames = list(uploaded_files)
     file_items = list(uploaded_files.values())
-    print("+++++" + str(type(uploaded_files['file1'])))
-    print("+++++" + str(type(uploaded_files)))
-    print("+++++" + str(type(list(uploaded_files.values())[0])))
-    print(uploaded_files.values())
 
     if len(uploaded_files) < 2:
-        return jsonify("don't upload less than 2 pictures")
+        return jsonify(["don't upload less than 2 pictures"])
     # extract faces
-    print(len(file_items))
     faces = [extract_face(f) for f in file_items]
-    print(len(faces))
+    if any(elem is None for elem in faces):
+        return jsonify(["don't upload pictures without faces"])
+
     embeddings = get_embeddings(faces)
-    print(len(embeddings))
     results = []
     for x in range(1, len(embeddings)):
         result_cosine = is_match(embeddings[0], embeddings[x])
