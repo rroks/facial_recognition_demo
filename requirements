@@ -1,0 +1,10 @@
+tensorflow==1.14.0
+keras==2.2.4
+scipy
+numpy
+mtcnn
+Pillow
+matplotlib
+flask
+flask-cors
+keras-vggface
